@@ -1,0 +1,68 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+packages:
+  - sshfs
+
+write_files:
+  - path: /etc/fstab
+    content: |
+      ${STORAGE_USERNAME}@${STORAGE_IP}:${STORAGE_PATH} /mnt/data fuse.sshfs x-systemd.automount,X-mount.mkdir,_netdev,user,idmap=user,follow_symlinks,identityfile=/etc/ssh/id_rsa,allow_other,default_permissions,uid=minio-user,gid=minio-user,StrictHostKeyChecking=no 0 0
+    append: true
+
+  - path: /etc/ssh/id_rsa
+    permissions: '600'
+    content: |
+      ${indent(6, STORAGE_SSH_KEY)}
+
+  - path: /usr/lib/systemd/system/minio.service
+    content: |
+      [Unit]
+      Description=MinIO
+      Documentation=https://min.io/docs/minio/linux/index.html
+      Wants=network-online.target
+      After=network-online.target
+      AssertFileIsExecutable=/opt/minio
+
+      [Service]
+      WorkingDirectory=/opt
+
+      User=minio-user
+      Group=minio-user
+      ProtectProc=invisible
+
+      EnvironmentFile=-/etc/default/minio
+      ExecStartPre=/bin/bash -c "if [ -z \"$${MINIO_VOLUMES}\" ]; then echo \"Variable MINIO_VOLUMES not set in /etc/default/minio\"; exit 1; fi"
+      ExecStart=/opt/minio server $MINIO_OPTS $MINIO_VOLUMES
+      Restart=always
+      LimitNOFILE=65536
+      TasksMax=infinity
+      TimeoutStopSec=infinity
+      SendSIGKILL=no
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /etc/default/minio
+    content: |
+      MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      MINIO_VOLUMES="/mnt/data"
+      MINIO_OPTS="--console-address :9001"
+
+runcmd:
+  # Create MinIO User
+  - groupadd -r minio-user
+  - useradd -M -r -g minio-user minio-user
+
+  # Mount SSSHFS to /mnt/data
+  - mount -av
+
+  # Install MinIO
+  - wget -O /opt/minio https://dl.min.io/server/minio/release/linux-amd64/minio
+  - chmod +x /opt/minio
+
+  # Start MinIO Service
+  - systemctl enable minio
+  - sudo systemctl start minio
+
