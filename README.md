@@ -55,4 +55,48 @@ sshfs_ssh_key = <<-EOF
 ```
 
 <!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.6.0 |
+| <a name="requirement_hcloud"></a> [hcloud](#requirement\_hcloud) | >= 1.47 |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [hcloud_firewall.this](https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/firewall) | resource |
+| [hcloud_network.this](https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/network) | resource |
+| [hcloud_network_subnet.this](https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/network_subnet) | resource |
+| [hcloud_primary_ip.this](https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/primary_ip) | resource |
+| [hcloud_server.single](https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/server) | resource |
+| [random_password.this](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [random_pet.this](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) | resource |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_default_tags"></a> [default\_tags](#input\_default\_tags) | A map of default tags, that will be applied to all resources applicable. | `map(string)` | `{}` | no |
+| <a name="input_minio_password"></a> [minio\_password](#input\_minio\_password) | Password for Minio root user | `string` | `null` | no |
+| <a name="input_minio_username"></a> [minio\_username](#input\_minio\_username) | Username for Minio root user | `string` | `null` | no |
+| <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | A prefix that will be used on all named resources. | `string` | `"pippi-"` | no |
+| <a name="input_network_cidr"></a> [network\_cidr](#input\_network\_cidr) | CIDR of the network | `string` | `"10.0.0.0/24"` | no |
+| <a name="input_network_id"></a> [network\_id](#input\_network\_id) | ID of the network | `string` | `null` | no |
+| <a name="input_network_subnet"></a> [network\_subnet](#input\_network\_subnet) | Subnet of the network | `string` | `"10.0.0.0/28"` | no |
+| <a name="input_server_datacenter"></a> [server\_datacenter](#input\_server\_datacenter) | Datacenter of the Minio server | `string` | `"fsn1-dc14"` | no |
+| <a name="input_server_type"></a> [server\_type](#input\_server\_type) | VM type of the Minio server | `string` | `"cx11"` | no |
+| <a name="input_sshfs_ip"></a> [sshfs\_ip](#input\_sshfs\_ip) | IP address of the SSHFS Server | `string` | n/a | yes |
+| <a name="input_sshfs_path"></a> [sshfs\_path](#input\_sshfs\_path) | Path to data on the SSHFS Server | `string` | n/a | yes |
+| <a name="input_sshfs_ssh_key"></a> [sshfs\_ssh\_key](#input\_sshfs\_ssh\_key) | SSH key for SSHFS Server | `string` | n/a | yes |
+| <a name="input_sshfs_user"></a> [sshfs\_user](#input\_sshfs\_user) | Username of the SSHFS Server | `string` | n/a | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_minio_root_password"></a> [minio\_root\_password](#output\_minio\_root\_password) | Password for Minio root user |
+| <a name="output_minio_root_user"></a> [minio\_root\_user](#output\_minio\_root\_user) | Username for Minio root user |
+| <a name="output_server_ip"></a> [server\_ip](#output\_server\_ip) | IP address of the MinIO server |
 <!-- END_TF_DOCS -->
